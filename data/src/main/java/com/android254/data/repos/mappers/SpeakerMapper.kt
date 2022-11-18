@@ -51,5 +51,5 @@ fun SpeakerDTO.toDomain() = Speaker(
     instagram = "",
     facebook = "",
     blog = "",
-    company_website = "",
+    company_website = ""
 )

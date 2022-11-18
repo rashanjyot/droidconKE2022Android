@@ -16,12 +16,14 @@
 package com.android254.data.di
 
 import com.android254.data.repos.AuthManager
-import com.android254.data.repos.SessionsManager
-import com.android254.domain.repos.AuthRepo
-import com.android254.domain.repos.SessionsRepo
 import com.android254.data.repos.HomeRepoImpl
+import com.android254.data.repos.OrganizersSource
+import com.android254.data.repos.SessionsManager
 import com.android254.data.repos.SpeakersManager
+import com.android254.domain.repos.AuthRepo
 import com.android254.domain.repos.HomeRepo
+import com.android254.domain.repos.OrganizersRepository
+import com.android254.domain.repos.SessionsRepo
 import com.android254.domain.repos.SpeakersRepo
 import dagger.Binds
 import dagger.Module
@@ -48,4 +50,8 @@ abstract class RepoModule {
     @Binds
     @Singleton
     abstract fun provideSpeakersRepo(manager: SpeakersManager): SpeakersRepo
+
+    @Binds
+    @Singleton
+    abstract fun provideOrganizersRepo(source: OrganizersSource): OrganizersRepository
 }

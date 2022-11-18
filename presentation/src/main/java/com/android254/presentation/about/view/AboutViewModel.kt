@@ -15,33 +15,30 @@
  */
 package com.android254.presentation.about.view
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.android254.domain.repos.OrganizersRepository
 import com.android254.presentation.models.OrganizingTeamMember
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class AboutViewModel @Inject constructor() : ViewModel() {
+class AboutViewModel @Inject constructor(
+    private val organizersRepo: OrganizersRepository
+) : ViewModel() {
 
-    val sampleImageUrl: String = "https://media-exp1.licdn.com/dms/image/C4D03AQGn58utIO-x3w/profile-displayphoto-shrink_200_200/0/1637478114039?e=2147483647&v=beta&t=3kIon0YJQNHZojD3Dt5HVODJqHsKdf2YKP1SfWeROnI"
+    suspend fun getOrganizers(): Pair<List<OrganizingTeamMember>, List<String>> {
+        val result = organizersRepo.getOrganizers()
+        val team = result.filter { it.type == "individual" }.map {
+            OrganizingTeamMember(
+                name = it.name,
+                desc = it.tagline,
+                image = it.photo
+            )
+        }
+        val stakeholders = result.filterNot { it.type == "individual" }.map {
+            it.photo
+        }
 
-    val organizingTeamMembers = MutableList(17) {
-        OrganizingTeamMember(
-            name = "Frank Tamre",
-            desc = "Main Man",
-            image = sampleImageUrl
-        )
+        return Pair(team, stakeholders)
     }
-
-    var stakeHolderLogos = mutableStateOf(
-        listOf(
-            sampleImageUrl,
-            sampleImageUrl,
-            sampleImageUrl,
-            sampleImageUrl,
-            sampleImageUrl,
-            sampleImageUrl,
-        )
-    )
 }

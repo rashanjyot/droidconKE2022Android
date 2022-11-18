@@ -15,12 +15,20 @@
  */
 package com.android254.presentation.about.view
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -51,11 +59,16 @@ import com.google.accompanist.flowlayout.SizeMode
 @Composable
 fun AboutScreen(
     aboutViewModel: AboutViewModel = hiltViewModel(),
-    navigateToFeedbackScreen: () -> Unit = {},
+    navigateToFeedbackScreen: () -> Unit = {}
 ) {
-    val teamMembers: List<OrganizingTeamMember> = aboutViewModel.organizingTeamMembers
-    val stakeHolderLogos = aboutViewModel.stakeHolderLogos.value
-    val sampleImageUrl = aboutViewModel.sampleImageUrl
+    val teamMembers = remember { mutableStateListOf<OrganizingTeamMember>() }
+    val stakeHolderLogos = remember { mutableStateListOf<String>() }
+
+    LaunchedEffect(Unit) {
+        val data = aboutViewModel.getOrganizers()
+        teamMembers.addAll(data.first)
+        stakeHolderLogos.addAll(data.second)
+    }
 
     Scaffold(
         topBar = {
@@ -63,7 +76,7 @@ fun AboutScreen(
                 onButtonClick = {
                     navigateToFeedbackScreen()
                 },
-                userProfile = sampleImageUrl
+                userProfile = ""
             )
         }
     ) { paddingValues ->
@@ -76,7 +89,7 @@ fun AboutScreen(
         ) {
             AboutDroidconSection(
                 droidconDesc = stringResource(id = R.string.about_droidcon),
-                droidconImage = sampleImageUrl,
+                droidconImage = ""
             )
 
             Spacer(modifier = Modifier.height(40.dp))
@@ -105,17 +118,16 @@ fun AboutScreen(
 fun AboutDroidconSection(
     modifier: Modifier = Modifier,
     droidconDesc: String,
-    droidconImage: String,
+    droidconImage: String
 ) {
     Column(
         modifier = modifier
     ) {
-
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(droidconImage)
+                .data(R.drawable.team)
                 .build(),
-            placeholder = painterResource(R.drawable.droidcon_icon),
+            placeholder = painterResource(R.drawable.team),
             contentDescription = stringResource(id = R.string.about_droidcon_image),
             contentScale = ContentScale.FillWidth,
             modifier = Modifier
@@ -134,8 +146,8 @@ fun AboutDroidconSection(
                 fontWeight = FontWeight.Bold,
                 fontSize = 21.sp,
                 lineHeight = 25.sp,
-                fontFamily = MontserratBold,
-            ),
+                fontFamily = MontserratBold
+            )
         )
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -149,8 +161,8 @@ fun AboutDroidconSection(
                 color = ChaiCoal,
                 fontSize = 16.sp,
                 lineHeight = 19.sp,
-                fontFamily = MontserratRegular,
-            ),
+                fontFamily = MontserratRegular
+            )
         )
     }
 }
@@ -159,14 +171,13 @@ fun AboutDroidconSection(
 fun OrganizingTeamSection(
     modifier: Modifier = Modifier,
     organizingTeam: List<OrganizingTeamMember>,
-    onClickMember: (Int) -> Unit,
+    onClickMember: (Int) -> Unit
 ) {
     Column(
         modifier = modifier
             .padding(start = 20.dp, end = 20.dp)
             .testTag("organizing_team_section")
     ) {
-
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.about_organizing_team),
@@ -175,8 +186,8 @@ fun OrganizingTeamSection(
                 fontWeight = FontWeight.Bold,
                 fontSize = 21.sp,
                 lineHeight = 25.sp,
-                fontFamily = MontserratBold,
-            ),
+                fontFamily = MontserratBold
+            )
         )
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -193,7 +204,7 @@ fun OrganizingTeamSection(
                 OrganizingTeamComponent(
                     modifier = Modifier.width(99.dp),
                     teamMember = teamMember,
-                    onClickMember = onClickMember,
+                    onClickMember = onClickMember
                 )
             }
         }
